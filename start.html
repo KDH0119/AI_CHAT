@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Character Creation</title>
+    <link rel="stylesheet" href="style_start.css">
+</head>
+<body>
+    <div class="container">
+        <div class="title">
+            <h1>캐릭터 챗 생성기</h1>
+            <p>나만의 AI 캐릭터를 만들어보세요</p>
+        </div>
+
+        <form action="Main_chat.html" method="post">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="name"><span class="icon">👤</span>캐릭터 챗 이름</label>
+                    <input type="text" id="name" name="name" placeholder="예: 선생님" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="profile_name"><span class="icon">🏷️</span>프로필 이름</label>
+                    <input type="text" id="profile_name" name="profile_name" 
+                           placeholder="예: 홍길동 등">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="profile_detail"><span class="icon">🌟</span>프로필 상세정보</label>
+                <input type="text" id="profile_detail" name="profile_detail" 
+                       placeholder="페르소나의 기본 특징이나 설정을 간단히 적어주세요">
+            </div>
+
+            <div class="form-group">
+                <label for="main_prompt"><span class="icon">📋</span>메인 프롬프트</label>
+                <textarea id="main_prompt_1" name="main_prompt_1" maxlength="10000" 
+                         placeholder="전체 시스템 프롬프트를 입력하세요...&#10;&#10;예시:&#10;You are a helpful assistant. Always be polite and informative."></textarea>
+                <div class="char-count">
+                    <span id="main-prompt-count">0</span> / 10000 글자
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="prompt"><span class="icon">✍️</span>상세 프롬프트 (캐릭터 설명)</label>
+                <textarea id="prompt" name="prompt" maxlength="10000" 
+                         placeholder="캐릭터의 성격, 배경, 말투 등을 자세히 설명해주세요...&#10;&#10;예시:&#10;- 성격: 고지식함&#10;- 말투: 다정함&#10;- 특징: 똑똑함"></textarea>
+                <div class="char-count">
+                    <span id="prompt-count">0</span> / 10000 글자
+                </div>
+            </div>
+
+            <div class="form-row-2">
+                <div class="form-group">
+                    <label for="prolog"><span class="icon">💬</span>시작 대사</label>
+                    <textarea id="prolog" name="prolog" maxlength="1000"
+                           placeholder="첫 만남 인사말을 입력하세요"></textarea>
+                    <div class="char-count">
+                        <span id="prolog-count">0</span> / 1000 글자
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="start_option"><span class="icon">⚙️</span>시작 설정</label>
+                    <input type="text" id="start_option" name="start_option" 
+                           placeholder="초기 관계, 상황 등">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="start_situation"><span class="icon">🎬</span>시작 상황</label>
+                <input type="text" id="start_situation" name="start_situation" 
+                       placeholder="첫 만남이 일어나는 장소나 상황을 설명하세요">
+            </div>
+
+            <button type="submit" class="submit-btn">
+                🚀 캐릭터 생성하기
+            </button>
+        </form>
+    </div>
+
+    <script src="js_start.js"></script>
+</body>
+</html>

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI_CHAT_MAIN</title>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link rel="stylesheet" href="Main_chat_style.css">
+</head>
+<body>
+    <button class="mobile-menu-btn" onclick="toggleSidebar()">☰</button>
+
+    <div class="sidebar-overlay" onclick="closeSidebar()"></div>
+
+    <div class="main-container">
+        <div class="sidebar" id="sidebar">
+            <button class="sidebar-close-btn" onclick="closeSidebar()">✕</button>
+
+            <div class="sidebar-title">
+                <h2>대화 관리</h2>
+                <p>채팅 내용을 저장하고 관리하세요</p>
+            </div>
+
+            <div class="api-key-section">
+                <label for="api-key-input" class="api-key-label">
+                    🔑 API Key
+                </label>
+                <input 
+                    type="password" 
+                    id="api-key-input" 
+                    class="api-key-input" 
+                    placeholder="Gemini API 키를 입력하세요"
+                    autocomplete="off"
+                >
+                <button class="api-key-save-btn" onclick="saveApiKey()">
+                    💾 저장
+                </button>
+                <div id="api-key-status" class="api-key-status"></div>
+            </div>
+
+            <button class="summary-button" onclick="openSummaryModal()">
+                📝 대화 요약
+            </button>
+
+            <button class="save-button" onclick="saveChatHistory()">
+                💾 대화 저장
+            </button>
+
+            <button class="clear-button" onclick="clearChat()">
+                🗑️대화 삭제
+            </button>
+
+            <div id="save-status" class="save-status"></div>
+
+            <div class="chat-list-section">
+                <h3 class="chat-list-title">📋 저장된 채팅</h3>
+                <div id="chat-list" class="chat-list"></div>
+            </div>
+        </div>
+
+        <div class="chat-container">
+            <div class="header">
+                <h1 id="character-title">미정</h1>
+            </div>
+
+            <div id="chat-box"></div>
+
+            <div class="input-section">
+                <form id="prompt-form">
+                    <input type="text" id="prompt-input" placeholder="메시지를 입력하세요..." autocomplete="off">
+                    <button type="submit" class="send-button">
+                        <span>📤</span>
+                        <span>전송</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="edit-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header orange">
+                <h2>채팅방 정보 수정</h2>
+                <button class="modal-close" onclick="closeEditModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="edit-field">
+                    <label>캐릭터 이름</label>
+                    <input type="text" id="edit-name" maxlength="50">
+                </div>
+                <div class="edit-field">
+                    <label for="edit-main-prompt"><span class="icon"></span>메인 프롬프트</label>
+                    <textarea id="edit-main-prompt" rows="6" maxlength="10000" 
+                            placeholder="전체 시스템 프롬프트를 입력하세요..."></textarea>
+                </div>
+                    <div class="char-count">
+                        <span id="edit-main-prompt-count">0</span> / 10000 글자
+                    </div>
+                <div class="edit-field">
+                    <label>프로필 이름</label>
+                    <input type="text" id="edit-profile-name" maxlength="100">
+                </div>
+                <div class="edit-field">
+                    <label>프로필 상세정보</label>
+                    <textarea id="edit-profile-detail" rows="3" maxlength="500"></textarea>
+                </div>
+                <div class="edit-field">
+                    <label>상세 프롬프트</label>
+                    <textarea id="edit-prompt" rows="6" maxlength="6500"></textarea>
+                </div>
+                <div class="edit-field">
+                    <label>시작 대사</label>
+                    <textarea id="edit-prolog" rows="3" maxlength="1000"></textarea>
+                </div>
+                <div class="edit-field">
+                    <label>시작 설정</label>
+                    <input type="text" id="edit-start-option" maxlength="100">
+                </div>
+                <div class="edit-field">
+                    <label>시작 상황</label>
+                    <textarea id="edit-start-situation" rows="3" maxlength="500"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn cancel" onclick="closeEditModal()">취소</button>
+                <button class="modal-btn primary" id="save-edit-btn">저장</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="summary-modal" class="modal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header green">
+                <h2>대화 요약하기</h2>
+                <button class="modal-close" onclick="closeSummaryModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p class="summary-info" id="summary-total-info"></p>
+                <p class="summary-info">요약할 턴 수를 입력하세요 (최근 대화부터 역순으로 계산됩니다)</p>
+                <div class="edit-field">
+                    <label>요약할 턴 수</label>
+                    <input type="number" id="summary-turns" min="1" placeholder="예: 20">
+                    <span class="summary-hint" id="summary-hint"></span>
+                </div>
+                <div class="summary-preview" id="summary-preview"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn cancel" onclick="closeSummaryModal()">취소</button>
+                <button class="modal-btn success" id="execute-summary-btn">요약 실행</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="summary-result-modal" class="modal">
+        <div class="modal-content" style="max-width: 700px;">
+            <div class="modal-header green">
+                <h2>요약 완료</h2>
+                <button class="modal-close" onclick="closeSummaryResultModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p class="summary-success-msg" id="summary-success-text"></p>
+                <div class="summary-result-text">
+                    <h3>요약 내용:</h3>
+                    <pre id="summary-result-content"></pre>
+                </div>
+                <p class="summary-note">💡 이제 AI는 이 요약을 기반으로 대화를 이어갑니다.</p>
+            </div>
+            <div class="modal-footer" style="justify-content: center;">
+                <button class="modal-btn success" onclick="closeSummaryResultModal()">확인</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="edit-message-modal" class="modal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header orange">
+                <h2>메시지 수정</h2>
+                <button class="modal-close" onclick="closeEditMessageModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="edit-field">
+                    <label>메시지 내용</label>
+                    <textarea id="edit-message-content" rows="8" placeholder="수정할 내용을 입력하세요..."></textarea>
+                </div>
+                <p class="summary-note">💡 메시지를 수정하면 대화 히스토리도 함께 업데이트됩니다.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn cancel" onclick="closeEditMessageModal()">취소</button>
+                <button class="modal-btn primary" id="save-message-edit-btn">저장</button>
+            </div>
+        </div>
+    </div>
+    
+<script src="js/main.js" type="module"></script>
+</body>
+</html>
