@@ -67,7 +67,7 @@
 
             <div class="input-section">
                 <form id="prompt-form">
-                    <input type="text" id="prompt-input" placeholder="메시지를 입력하세요..." autocomplete="off">
+                    <textarea id="prompt-input" placeholder="메시지를 입력하세요... (Shift+Enter로 줄바꿈)" autocomplete="off" rows="1"></textarea>
                     <button type="submit" class="send-button">
                         <span>📤</span>
                         <span>전송</span>
@@ -106,7 +106,7 @@
                 </div>
                 <div class="edit-field">
                     <label>상세 프롬프트</label>
-                    <textarea id="edit-prompt" rows="6" maxlength="6500"></textarea>
+                    <textarea id="edit-prompt" rows="6" maxlength="10000"></textarea>
                 </div>
                 <div class="edit-field">
                     <label>시작 대사</label>
