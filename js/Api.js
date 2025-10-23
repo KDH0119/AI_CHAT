@@ -300,4 +300,3 @@ console.log('\n토큰 추적 시스템 활성화됨!');
 console.log('💡 사용 가능한 명령어:');
 console.log('  - showTokenStats() : 세션 통계 보기');
 console.log('  - resetTokenStats() : 통계 초기화\n');
-console.log('🛡️ Safety Settings: BLOCK_NONE (모든 필터 비활성화)\n');
