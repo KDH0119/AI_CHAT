@@ -24,6 +24,25 @@ const PRICING = {
     USD_TO_KRW: 1380         // 환율 (대략)
 };
 
+const SAFETY_SETTINGS = [
+    {
+        category: "HARM_CATEGORY_HARASSMENT",
+        threshold: "BLOCK_NONE"
+    },
+    {
+        category: "HARM_CATEGORY_HATE_SPEECH",
+        threshold: "BLOCK_NONE"
+    },
+    {
+        category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+        threshold: "BLOCK_NONE"
+    },
+    {
+        category: "HARM_CATEGORY_DANGEROUS_CONTENT",
+        threshold: "BLOCK_NONE"
+    }
+];
+
 window.updateApiKey = function(newApiKey) {
     API_KEY = newApiKey;
     genAI = newApiKey ? new GoogleGenerativeAI(newApiKey) : null;
@@ -189,7 +208,8 @@ export async function sendToGemini(prompt, systemInstruction = "") {
     }
     const model = genAI.getGenerativeModel({
         model: MODEL_NAME,
-        systemInstruction: systemInstruction
+        systemInstruction: systemInstruction,
+        safetySettings: SAFETY_SETTINGS
     });
     
     try {
@@ -219,7 +239,8 @@ export async function* sendToGeminiStream(prompt, history = [], systemInstructio
     
     const model = genAI.getGenerativeModel({
         model: MODEL_NAME,
-        systemInstruction: systemInstruction
+        systemInstruction: systemInstruction,
+        safetySettings: SAFETY_SETTINGS
     });
     
     const chat = model.startChat({
@@ -233,7 +254,7 @@ export async function* sendToGeminiStream(prompt, history = [], systemInstructio
 
     try {
         const result = await chat.sendMessageStream(prompt, {
-            thinkingConfig: { thinkingBudget: 128 }
+            thinkingConfig: { thinkingBudget: 512 }
         });
         
         for await (const chunk of result.stream) {
@@ -279,3 +300,4 @@ console.log('\n토큰 추적 시스템 활성화됨!');
 console.log('💡 사용 가능한 명령어:');
 console.log('  - showTokenStats() : 세션 통계 보기');
 console.log('  - resetTokenStats() : 통계 초기화\n');
+console.log('🛡️ Safety Settings: BLOCK_NONE (모든 필터 비활성화)\n');
