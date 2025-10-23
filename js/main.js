@@ -193,12 +193,20 @@ elements.form.addEventListener('submit', async (e) => {
     }
 });
 
-elements.input.addEventListener('keypress', (e) => {
+// Shift+Enter로 줄바꿈, Enter로 전송
+elements.input.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault();
         elements.form.dispatchEvent(new Event('submit'));
     }
 });
+
+// textarea 자동 높이 조절
+elements.input.addEventListener('input', function() {
+    this.style.height = 'auto';
+    this.style.height = Math.min(this.scrollHeight, 200) + 'px'; // 최대 200px
+});
+
 
 document.getElementById('edit-modal').addEventListener('click', function(e) {
     if (e.target === this) window.closeEditModal();
