@@ -715,7 +715,7 @@ body {
 #prompt-form {
     display: flex;
     gap: 12px;
-    align-items: center;
+    align-items: flex-end;
 }
 
 #prompt-input {
@@ -727,6 +727,12 @@ body {
     outline: none;
     transition: all 0.2s ease;
     background: white;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    resize: none;
+    overflow-y: auto;
+    min-height: 44px;
+    max-height: 200px;
+    line-height: 1.5;
 }
 
 #prompt-input:focus {
@@ -798,6 +804,12 @@ body {
     color: #666666;
 }
 
+/* 유저 메시지의 em은 밝은 색으로 */
+.user span em {
+    color: #cccccc;
+    opacity: 0.9;
+}
+
 .message strong {
     font-weight: 600;
 }
@@ -865,6 +877,12 @@ body {
     border: none;
     border-top: 1px solid #e0e0e0;
     margin: 12px 0;
+}
+
+/* 마크다운 취소선(~~text~~) 스타일 제거 */
+.message del,
+.message s {
+    text-decoration: none;
 }
 
 @media screen and (max-width: 1024px) {
