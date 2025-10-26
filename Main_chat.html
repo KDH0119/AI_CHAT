@@ -6,11 +6,15 @@
     <title>AI_CHAT_MAIN</title>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <link rel="stylesheet" href="Main_chat_style.css">
+    <link rel="stylesheet" href="dark_mode.css">
 </head>
 <body>
+    
     <button class="mobile-menu-btn" onclick="toggleSidebar()">☰</button>
+    <button class="mobile-options-btn" onclick="toggleOptionsSidebar()">⚙️</button>
 
     <div class="sidebar-overlay" onclick="closeSidebar()"></div>
+    <div class="options-overlay" onclick="closeOptionsSidebar()"></div>
 
     <div class="main-container">
         <div class="sidebar" id="sidebar">
@@ -38,18 +42,6 @@
                 <div id="api-key-status" class="api-key-status"></div>
             </div>
 
-            <button class="summary-button" onclick="openSummaryModal()">
-                📝 대화 요약
-            </button>
-
-            <button class="save-button" onclick="saveChatHistory()">
-                💾 대화 저장
-            </button>
-
-            <button class="clear-button" onclick="clearChat()">
-                🗑️대화 삭제
-            </button>
-
             <div id="save-status" class="save-status"></div>
 
             <div class="chat-list-section">
@@ -74,6 +66,31 @@
                     </button>
                 </form>
             </div>
+        </div>
+
+        <div class="options-sidebar" id="options-sidebar">
+            <button class="sidebar-close-btn" onclick="closeOptionsSidebar()">✕</button>
+
+            <div class="sidebar-title">
+                <h2>옵션</h2>
+                <p>대화 설정 및 기능</p>
+            </div>
+
+             <button class="summary-button" onclick="openSummaryModal()">
+                📝 대화 요약
+            </button>
+
+            <button class="save-button" onclick="saveChatHistory()">
+                💾 대화 저장
+            </button>
+
+            <button class="user-note" onclick="openCustomSettingModal()">
+                🔧 커스텀 설정
+            </button>
+
+            <button class="dark-mode-button" onclick="toggleDarkMode()">
+                🌙 다크모드
+            </button>
         </div>
     </div>
 
@@ -119,6 +136,10 @@
                 <div class="edit-field">
                     <label>시작 상황</label>
                     <textarea id="edit-start-situation" rows="3" maxlength="500"></textarea>
+                </div>
+                <div class="edit-field">
+                    <label>커스텀 설정</label>
+                        <textarea id="edit-customSetting" rows="6" maxlength="5000" placeholder="프롬프트 맨 아래에 추가할 내용..."></textarea>
                 </div>
             </div>
             <div class="modal-footer">
@@ -187,6 +208,29 @@
             <div class="modal-footer">
                 <button class="modal-btn cancel" onclick="closeEditMessageModal()">취소</button>
                 <button class="modal-btn primary" id="save-message-edit-btn">저장</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="custom-setting-modal" class="modal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header orange">
+                <h2>🔧 커스텀 설정</h2>
+                <button class="modal-close" onclick="closeCustomSettingModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="edit-field">
+                    <label>커스텀 프롬프트</label>
+                    <textarea id="custom-setting-content" rows="10" maxlength="5000" placeholder="프롬프트 맨 아래에 추가할 내용을 입력하세요...&#10;&#10;예시:&#10;- 특정 상황에서의 행동 지침&#10;- 추가 성격 설정&#10;- 금지 사항 등"></textarea>
+                    <div class="char-count">
+                        <span id="custom-setting-count">0</span> / 5000 글자
+                    </div>
+                </div>
+                <p class="summary-note">추가하고 싶은 설정을 적어보세요.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn cancel" onclick="closeCustomSettingModal()">취소</button>
+                <button class="modal-btn primary" id="save-custom-setting-btn">저장</button>
             </div>
         </div>
     </div>

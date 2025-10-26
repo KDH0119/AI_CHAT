@@ -1,3 +1,4 @@
+import { state } from './main.js';
 
 export const elements = {
     form: document.getElementById('prompt-form'),
@@ -37,6 +38,15 @@ export function appendMessage(sender, text, isSummary = false, messageIndex = nu
     }
     
     messageDiv.appendChild(messageSpan);
+
+    if (sender === 'bot' && !isSummary) {
+    const rerollBtn = document.createElement('button');
+    rerollBtn.className = 'reroll-message-btn';
+    rerollBtn.innerHTML = '🔄';
+    rerollBtn.title = '메시지 리롤';
+    messageDiv.appendChild(rerollBtn);
+}
+
     
     // ⭐ 수정 버튼 (onclick 제거)
     const editBtn = document.createElement('button');
@@ -86,6 +96,32 @@ window.closeEditModal = () => closeModal('edit-modal');
 window.closeSummaryModal = () => closeModal('summary-modal');
 window.closeSummaryResultModal = () => closeModal('summary-result-modal');
 window.closeEditMessageModal = () => closeModal('edit-message-modal');
+window.closeCustomSettingModal = () => closeModal('custom-setting-modal');
+
+// state는 main.js에서 전역으로 접근 가능
+window.openCustomSettingModal = function() {
+    const customSettingContent = document.getElementById('custom-setting-content');
+    const customSettingCount = document.getElementById('custom-setting-count');
+    
+    // ⭐ state.characterInfo에서 불러오기 (window.state로 접근)
+    const savedCustomSetting = window.state?.characterInfo?.customSetting || '';
+    customSettingContent.value = savedCustomSetting;
+    customSettingCount.textContent = savedCustomSetting.length;
+    
+    // 글자 수 카운터 이벤트 리스너
+    customSettingContent.oninput = function() {
+        const currentLength = this.value.length;
+        customSettingCount.textContent = currentLength;
+        
+        if (currentLength > 4500) {
+            customSettingCount.style.color = '#e74c3c';
+        } else {
+            customSettingCount.style.color = '#666666';
+        }
+    };
+    
+    openModal('custom-setting-modal');
+};
 
 window.toggleSidebar = function() {
     const sidebar = document.getElementById('sidebar');
@@ -106,6 +142,29 @@ window.closeSidebar = function() {
     const overlay = document.querySelector('.sidebar-overlay');
     
     sidebar.classList.remove('active');
+    overlay.classList.remove('active');
+    document.body.style.overflow = '';
+}
+
+window.toggleOptionsSidebar = function() {
+    const optionsSidebar = document.getElementById('options-sidebar');
+    const overlay = document.querySelector('.options-overlay');
+    
+    optionsSidebar.classList.toggle('active');
+    overlay.classList.toggle('active');
+    
+    if (optionsSidebar.classList.contains('active')) {
+        document.body.style.overflow = 'hidden';
+    } else {
+        document.body.style.overflow = '';
+    }
+}
+
+window.closeOptionsSidebar = function() {
+    const optionsSidebar = document.getElementById('options-sidebar');
+    const overlay = document.querySelector('.options-overlay');
+    
+    optionsSidebar.classList.remove('active');
     overlay.classList.remove('active');
     document.body.style.overflow = '';
 }
@@ -142,3 +201,30 @@ window.saveApiKey = function() {
     apiKeyStatus.style.color = '#28a745';
     setTimeout(() => { apiKeyStatus.textContent = ''; }, 3000);
 }
+
+// 다크모드 토글 함수
+window.toggleDarkMode = function() {
+    document.body.classList.toggle('dark-mode');
+    
+    // 다크모드 상태를 localStorage에 저장
+    const isDarkMode = document.body.classList.contains('dark-mode');
+    localStorage.setItem('dark_mode', isDarkMode ? 'enabled' : 'disabled');
+    
+    // 버튼 텍스트 변경
+    const darkModeBtn = document.querySelector('.dark-mode-button');
+    if (darkModeBtn) {
+        darkModeBtn.textContent = isDarkMode ? '☀️ 라이트모드' : '🌙 다크모드';
+    }
+}
+
+// 페이지 로드 시 다크모드 상태 복원
+document.addEventListener('DOMContentLoaded', function() {
+    const darkModeStatus = localStorage.getItem('dark_mode');
+    if (darkModeStatus === 'enabled') {
+        document.body.classList.add('dark-mode');
+        const darkModeBtn = document.querySelector('.dark-mode-button');
+        if (darkModeBtn) {
+            darkModeBtn.textContent = '☀️ 라이트모드';
+        }
+    }
+});

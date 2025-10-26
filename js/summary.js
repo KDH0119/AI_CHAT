@@ -125,8 +125,9 @@ export async function executeSummary() {
     } catch (error) {
         console.error('요약 오류:', error);
         showStatus('요약 중 오류가 발생했습니다: ' + error.message, 'error');
-        executeBtn.disabled = false;
-        executeBtn.textContent = '요약 실행';
+    }finally {
+    executeBtn.disabled = false;
+    executeBtn.textContent = '요약 실행';
     }
 }
 

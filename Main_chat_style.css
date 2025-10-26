@@ -36,6 +36,28 @@ body {
     background: #333333;
 }
 
+.mobile-options-btn {
+    display: none;
+    position: fixed;
+    top: 74px;
+    left: 20px;
+    z-index: 1001;
+    background: #000000;
+    color: white;
+    border: none;
+    width: 44px;
+    height: 44px;
+    border-radius: 8px;
+    font-size: 1.3em;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    transition: all 0.2s ease;
+}
+
+.mobile-options-btn:hover {
+    background: #333333;
+}
+
 .sidebar-overlay {
     display: none;
     position: fixed;
@@ -49,20 +71,49 @@ body {
     transition: opacity 0.3s ease;
 }
 
+.options-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.options-overlay.active {
+    display: block;
+    opacity: 1;
+}
+
 .sidebar-overlay.active {
     display: block;
     opacity: 1;
 }
 
 .main-container {
-    display: flex;
+    display: grid;
+    grid-template-columns: 280px 1fr 280px;
     gap: 20px;
     width: 100%;
-    max-width: 1400px;
+    max-width: 1600px;
     height: 90vh;
 }
 
 .sidebar {
+    width: 280px;
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease;
+}
+.options-sidebar {
     width: 280px;
     background: #ffffff;
     border: 1px solid #e0e0e0;
@@ -179,7 +230,9 @@ body {
 
 .summary-button,
 .save-button,
-.clear-button {
+.clear-button,
+.user-note,
+.dark-mode-button{
     width: 100%;
     border: 1px solid #000000;
     padding: 12px 16px;
@@ -197,7 +250,9 @@ body {
 }
 
 .summary-button:hover,
-.save-button:hover {
+.save-button:hover,
+.user-note:hover,
+.dark-mode-button:hover {
     background: #000000;
     color: #ffffff;
 }
@@ -345,7 +400,8 @@ body {
 }
 
 .delete-message-btn,
-.edit-message-btn {
+.edit-message-btn,
+.reroll-message-btn {
     position: absolute;
     top: 8px;
     background: #ffffff;
@@ -364,6 +420,10 @@ body {
     z-index: 10;
 }
 
+.reroll-message-btn {
+    right: 64px;
+}
+
 .edit-message-btn {
     right: 36px;
 }
@@ -372,11 +432,13 @@ body {
     right: 8px;
 }
 
+.message:hover .reroll-message-btn,
 .message:hover .edit-message-btn,
 .message:hover .delete-message-btn {
     opacity: 1;
 }
 
+.reroll-message-btn:hover,
 .edit-message-btn:hover,
 .delete-message-btn:hover {
     background: #000000;
@@ -385,11 +447,13 @@ body {
 }
 
 @media screen and (max-width: 768px) {
+    .reroll-message-btn,
     .edit-message-btn,
     .delete-message-btn {
         opacity: 0.7;
     }
     
+    .message:active .reroll-message-btn,
     .message:active .edit-message-btn,
     .message:active .delete-message-btn {
         opacity: 1;
@@ -672,8 +736,8 @@ body {
 }
 
 .user span {
-    background: #000000;
-    color: white;
+    background: #4a7c59;
+    color: #ffffff;
     padding: 12px 16px;
     border-radius: 4px;
     display: inline-block;
@@ -685,8 +749,8 @@ body {
 }
 
 .bot span {
-    background-color: #fafafa;
-    color: #000000;
+    background-color: #f5f0e8;
+    color: #2c2c2c;
     padding: 12px 16px;
     border-radius: 4px;
     display: inline-block;
@@ -695,7 +759,7 @@ body {
     max-width: 75%;
     font-size: 0.95em;
     line-height: 1.5;
-    border: 1px solid #e0e0e0;
+    border: 1px solid #e0d5c7;
 }
 
 .message.summary-message span {
@@ -800,14 +864,22 @@ body {
 
 .message em {
     font-style: italic;
-    opacity: 0.6;
-    color: #666666;
+    opacity: 1;
+
 }
 
 /* 유저 메시지의 em은 밝은 색으로 */
 .user span em {
-    color: #cccccc;
-    opacity: 0.9;
+    color: #ffd89b;
+    opacity: 1;
+    font-weight: 500;
+}
+
+/* 봇 메시지의 em */
+.message em {
+    font-style: italic;
+    opacity: 0.6;
+    color: #333333;
 }
 
 .message strong {
@@ -887,6 +959,19 @@ body {
 
 @media screen and (max-width: 1024px) {
     .main-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .sidebar {
+        display: none;
+    }
+    
+    .options-sidebar {
+        display: none;
+    }
+    
+    .main-container {
+        grid-template-columns: 1fr;
         gap: 16px;
     }
     
@@ -925,7 +1010,12 @@ body {
         display: block;
     }
     
+    .mobile-options-btn {
+        display: block;
+    }
+    
     .sidebar {
+        display: block !important;
         position: fixed;
         top: 0;
         left: 0;
@@ -941,6 +1031,26 @@ body {
     }
     
     .sidebar.active {
+        transform: translateX(0);
+    }
+    
+    .options-sidebar {
+        display: flex !important;
+        position: fixed;
+        top: 0;
+        right: 0;
+        width: 280px;
+        height: 100vh;
+        z-index: 1000;
+        transform: translateX(100%);
+        border-radius: 0;
+        border: none;
+        border-left: 1px solid #e0e0e0;
+        padding: 60px 20px 20px 20px;
+        overflow-y: auto;
+    }
+    
+    .options-sidebar.active {
         transform: translateX(0);
     }
     
@@ -1335,3 +1445,14 @@ body {
         padding: 8px 12px;
     }
 }
+ .reroll-message-btn,
+    .delete-message-btn,
+    .edit-message-btn {
+        opacity: 0.7;
+    }
+    
+    .message:active .reroll-message-btn,
+    .message:active .delete-message-btn,
+    .message:active .edit-message-btn {
+        opacity: 1;
+    }

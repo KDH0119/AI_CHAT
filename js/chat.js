@@ -7,8 +7,7 @@ export function applyTemplate(characterInfo) {
 
     const userPrompt = characterInfo.main_prompt_1 || "You are a helpful AI assistant.";
     
-    let characterSection = `
-# User Information & Character Information\n`;
+    let characterSection = ``;
     
     // User 정보
     if (characterInfo.profile_name || characterInfo.profile_detail) {
@@ -20,15 +19,17 @@ export function applyTemplate(characterInfo) {
         }
     }
     
-    if (characterInfo.name || characterInfo.start_option || characterInfo.start_situation) {
+    if (characterInfo.name || characterInfo.prompt || characterInfo.customSetting) {
         if (characterInfo.name) {
             characterSection += `## [ ${characterInfo.name}: (main character)] - role: assistant\n`;
         }
         if (characterInfo.prompt) {
             characterSection += `${characterInfo.prompt}\n`;
         }
+        if (characterInfo.customSetting) {
+            characterSection += `## Additional Information & Rules \n <system_note> \n ${characterInfo.customSetting} \n </system_note>`;
+        }
     }
-
     return userPrompt + characterSection;
 }
 
@@ -118,6 +119,11 @@ export function loadChatSession(sessionId) {
         state.characterInfo = session.characterInfo;
         elements.characterTitle.textContent = state.characterInfo.name;
         state.systemPrompt = applyTemplate(state.characterInfo);
+        
+        // 커스텀 설정을 localStorage에도 반영
+        if (state.characterInfo.customSetting) {
+            localStorage.setItem('custom_setting', state.characterInfo.customSetting);
+        }
     }
     
     clearChatBox();
@@ -144,7 +150,7 @@ export function editChatSession(sessionId) {
     document.getElementById('edit-prolog').value = session.characterInfo?.prolog || '';
     document.getElementById('edit-start-option').value = session.characterInfo?.start_option || '';
     document.getElementById('edit-start-situation').value = session.characterInfo?.start_situation || '';
-    
+    document.getElementById('edit-customSetting').value = session.characterInfo?.customSetting || '';
     document.getElementById('save-edit-btn').onclick = () => saveEditedSession(sessionId);
     openModal('edit-modal');
 }
@@ -163,9 +169,10 @@ export function saveEditedSession(sessionId) {
         profile_name: document.getElementById('edit-profile-name').value,
         profile_detail: document.getElementById('edit-profile-detail').value,
         prompt: document.getElementById('edit-prompt').value,
-        prolog: document.getElementById('edit-prolog').value,
-        start_option: document.getElementById('edit-start-option').value,
-        start_situation: document.getElementById('edit-start-situation').value
+        prolog: document.getElementById('edit-prolog').value,           // ⭐ 추가
+        start_option: document.getElementById('edit-start-option').value,  // ⭐ 추가
+        start_situation: document.getElementById('edit-start-situation').value,  // ⭐ 추가
+        customSetting: document.getElementById('edit-customSetting').value
     };
     
     session.title = updatedInfo.name;
@@ -176,7 +183,6 @@ export function saveEditedSession(sessionId) {
         state.characterInfo = updatedInfo;
         elements.characterTitle.textContent = updatedInfo.name;
         state.systemPrompt = applyTemplate(updatedInfo);
-        console.log(state.systemPrompt);
         showStatus('캐릭터 정보가 수정되었고 즉시 적용되었습니다.', 'success');
     }
     

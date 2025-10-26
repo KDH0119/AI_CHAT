@@ -1,0 +1,399 @@
+/* 다크모드 스타일 */
+body.dark-mode {
+    background: #1a1a1a;
+    color: #e0e0e0;
+}
+
+/* 메인 컨테이너 */
+.dark-mode .main-container {
+    background: #1a1a1a;
+}
+
+/* 사이드바 */
+.dark-mode .sidebar {
+    background: #2d2d2d;
+    border-right: 1px solid #404040;
+}
+
+.dark-mode .sidebar-title h2 {
+    color: #ffffff;
+}
+
+.dark-mode .sidebar-title p {
+    color: #b0b0b0;
+}
+
+/* API 키 섹션 */
+.dark-mode .api-key-label {
+    color: #e0e0e0;
+}
+
+.dark-mode .api-key-input {
+    background: #1a1a1a;
+    border: 1px solid #404040;
+    color: #e0e0e0;
+}
+
+.dark-mode .api-key-input:focus {
+    border-color: #666666;
+}
+
+.dark-mode .api-key-save-btn {
+    background: #404040;
+    color: #ffffff;
+}
+
+.dark-mode .api-key-save-btn:hover {
+    background: #555555;
+}
+
+/* 채팅 리스트 */
+.dark-mode .chat-list-title {
+    color: #e0e0e0;
+    border-bottom: 1px solid #404040;
+}
+
+.dark-mode .chat-item {
+    background: #1a1a1a;
+    border: 1px solid #404040;
+}
+
+.dark-mode .chat-item:hover {
+    background: #333333;
+    border-color: #555555;
+}
+
+.dark-mode .chat-item-title {
+    color: #ffffff;
+}
+
+.dark-mode .chat-item-date,
+.dark-mode .chat-item-preview {
+    color: #b0b0b0;
+}
+
+.dark-mode .edit-chat-btn,
+.dark-mode .delete-chat-btn {
+    background: #404040;
+    color: #ffffff;
+}
+
+.dark-mode .edit-chat-btn:hover,
+.dark-mode .delete-chat-btn:hover {
+    background: #555555;
+}
+
+/* 채팅 컨테이너 */
+.dark-mode .chat-container {
+    background: #1a1a1a;
+}
+
+.dark-mode .header {
+    background: #2d2d2d;
+    border-bottom: 1px solid #404040;
+}
+
+.dark-mode .header h1 {
+    color: #ffffff;
+}
+
+/* 채팅박스 */
+.dark-mode #chat-box {
+    background: #1a1a1a;
+}
+
+/* 메시지 */
+.dark-mode .message.user span {
+    background: #5a8a6a;
+    color: #ffffff;
+}
+
+.dark-mode .message.bot span {
+    background: #3a3a2f;
+    color: #e8e3d8;
+    border: 1px solid #4a4a3a;
+}
+
+.dark-mode .message.summary-message {
+    background: #3a3a1a;
+    border-left: 4px solid #b8860b;
+    color: #f0e68c;
+}
+
+/* 메시지 버튼 */
+.dark-mode .edit-message-btn,
+.dark-mode .delete-message-btn,
+.dark-mode .reroll-message-btn {
+    background: #404040;
+    color: #ffffff;
+}
+
+.dark-mode .edit-message-btn:hover,
+.dark-mode .delete-message-btn:hover,
+.dark-mode .reroll-message-btn:hover {
+    background: #555555;
+}
+
+/* 입력 섹션 */
+.dark-mode .input-section {
+    background: #2d2d2d;
+    border-top: 1px solid #404040;
+}
+
+.dark-mode #prompt-input {
+    background: #1a1a1a;
+    border: 1px solid #404040;
+    color: #e0e0e0;
+}
+
+.dark-mode #prompt-input:focus {
+    border-color: #666666;
+}
+
+.dark-mode #prompt-input::placeholder {
+    color: #808080;
+}
+
+.dark-mode .send-button {
+    background: #404040;
+    color: #ffffff;
+}
+
+.dark-mode .send-button:hover {
+    background: #555555;
+}
+
+/* 옵션 사이드바 */
+.dark-mode .options-sidebar {
+    background: #2d2d2d;
+    border-left: 1px solid #404040;
+}
+
+.dark-mode .summary-button,
+.dark-mode .save-button,
+.dark-mode .user-note,
+.dark-mode .dark-mode-button {
+    background: #404040;
+    color: #ffffff;
+    border: 1px solid #555555;
+}
+
+.dark-mode .summary-button:hover,
+.dark-mode .save-button:hover,
+.dark-mode .user-note:hover,
+.dark-mode .dark-mode-button:hover {
+    background: #555555;
+}
+
+/* 다크모드 버튼 활성화 상태 */
+.dark-mode .dark-mode-button {
+    background: #555555;
+    border-color: #777777;
+}
+
+/* 모달 */
+.dark-mode .modal-content {
+    background: #2d2d2d;
+    border: 1px solid #404040;
+}
+
+.dark-mode .modal-header {
+    background: #404040;
+    color: #ffffff;
+    border-bottom: 1px solid #555555;
+}
+
+.dark-mode .modal-header.orange {
+    background: #8b4513;
+}
+
+.dark-mode .modal-header.green {
+    background: #2d5016;
+}
+
+.dark-mode .modal-close {
+    color: #ffffff;
+}
+
+.dark-mode .modal-close:hover {
+    color: #ff6666;
+}
+
+.dark-mode .modal-body {
+    color: #e0e0e0;
+}
+
+.dark-mode .edit-field label {
+    color: #e0e0e0;
+}
+
+.dark-mode .edit-field input,
+.dark-mode .edit-field textarea,
+.dark-mode .edit-field select {
+    background: #1a1a1a;
+    border: 1px solid #404040;
+    color: #e0e0e0;
+}
+
+.dark-mode .edit-field input:focus,
+.dark-mode .edit-field textarea:focus,
+.dark-mode .edit-field select:focus {
+    border-color: #666666;
+}
+
+.dark-mode .char-count {
+    color: #b0b0b0;
+}
+
+.dark-mode .summary-info,
+.dark-mode .summary-note {
+    color: #b0b0b0;
+}
+
+.dark-mode .summary-preview,
+.dark-mode .summary-result-text {
+    background: #1a1a1a;
+    border: 1px solid #404040;
+    color: #e0e0e0;
+}
+
+.dark-mode .modal-btn {
+    background: #404040;
+    color: #ffffff;
+    border: 1px solid #555555;
+}
+
+.dark-mode .modal-btn:hover {
+    background: #555555;
+}
+
+.dark-mode .modal-btn.primary {
+    background: #2d4a7c;
+}
+
+.dark-mode .modal-btn.primary:hover {
+    background: #3a5f9e;
+}
+
+.dark-mode .modal-btn.success {
+    background: #2d5016;
+}
+
+.dark-mode .modal-btn.success:hover {
+    background: #3a6b1e;
+}
+
+.dark-mode .modal-btn.cancel {
+    background: #555555;
+}
+
+.dark-mode .modal-btn.cancel:hover {
+    background: #666666;
+}
+
+/* 상태 메시지 */
+.dark-mode .save-status,
+.dark-mode .api-key-status {
+    color: #b0b0b0;
+}
+
+/* 모바일 메뉴 버튼 */
+.dark-mode .mobile-menu-btn {
+    background: #404040;
+    color: #ffffff;
+}
+
+.dark-mode .mobile-menu-btn:hover {
+    background: #555555;
+}
+
+.dark-mode .mobile-options-btn {
+    background: #404040;
+    color: #ffffff;
+}
+
+.dark-mode .mobile-options-btn:hover {
+    background: #555555;
+}
+
+.dark-mode .sidebar-close-btn {
+    background: #404040;
+    color: #ffffff;
+}
+
+.dark-mode .sidebar-close-btn:hover {
+    background: #555555;
+}
+
+/* 코드 블록 (marked.js로 생성된 것들) */
+.dark-mode pre {
+    background: #1a1a1a !important;
+    border: 1px solid #404040 !important;
+}
+
+.dark-mode code {
+    background: #2d2d2d !important;
+    color: #e0e0e0 !important;
+}
+
+/* 링크 */
+.dark-mode a {
+    color: #6eb5ff;
+}
+
+.dark-mode a:hover {
+    color: #9fcdff;
+}
+
+/* 이탤릭 (대사) */
+.dark-mode .message em {
+    color: #f0ad4e;
+    opacity: 1;
+    font-weight: 500;
+}
+
+.dark-mode .user span em {
+    color: #ffd89b;
+    opacity: 1;
+    font-weight: 500;
+}
+
+.dark-mode .bot span em {
+    color: #f0ad4e;
+    opacity: 1;
+    font-weight: 500;
+}
+
+/* 테이블 */
+.dark-mode table {
+    border-color: #404040 !important;
+}
+
+.dark-mode th,
+.dark-mode td {
+    border-color: #404040 !important;
+    color: #e0e0e0 !important;
+}
+
+.dark-mode th {
+    background: #2d2d2d !important;
+}
+
+/* 스크롤바 */
+.dark-mode ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.dark-mode ::-webkit-scrollbar-track {
+    background: #1a1a1a;
+}
+
+.dark-mode ::-webkit-scrollbar-thumb {
+    background: #404040;
+    border-radius: 4px;
+}
+
+.dark-mode ::-webkit-scrollbar-thumb:hover {
+    background: #555555;
+}

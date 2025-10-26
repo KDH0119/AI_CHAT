@@ -1,7 +1,7 @@
 import { elements, showStatus, appendMessage, createBotMessageSpan, clearChatBox } from './ui.js';
 import { loadChatList, applyTemplate, saveChat } from './chat.js';
 import { sendToGeminiStream } from './Api.js';
-import { editMessage, deleteMessage } from './message.js';
+import { editMessage, deleteMessage, rerollMessage } from './message.js';
 import { openSummaryModal } from './summary.js'; // ⭐ import 추가
 
 export const state = {
@@ -12,6 +12,9 @@ export const state = {
     characterInfo: {},
     currentSummary: null
 };
+
+// ⭐ window 객체에도 추가하여 다른 파일에서 접근 가능하게
+window.state = state;
 
 marked.setOptions({ gfm: true, breaks: true });
 
@@ -41,6 +44,15 @@ document.addEventListener('DOMContentLoaded', function() {
     
     elements.chatBox.addEventListener('click', function(e) {
 
+        if (e.target.classList.contains('reroll-message-btn') || e.target.closest('.reroll-message-btn')) {
+            e.stopPropagation();
+            const btn = e.target.classList.contains('reroll-message-btn') ? e.target : e.target.closest('.reroll-message-btn');
+            const messageDiv = btn.closest('.message');
+            const index = parseInt(messageDiv.dataset.messageIndex);
+            if (!isNaN(index)) {
+                rerollMessage(index);
+            }
+        }
         if (e.target.classList.contains('edit-message-btn') || e.target.closest('.edit-message-btn')) {
             e.stopPropagation();
             const btn = e.target.classList.contains('edit-message-btn') ? e.target : e.target.closest('.edit-message-btn');
@@ -67,15 +79,16 @@ document.addEventListener('DOMContentLoaded', function() {
     const characterData = JSON.parse(localStorage.getItem('characterFormData') || '{}');
     
     if (Object.keys(characterData).length > 0) {
-        state.characterInfo = {
-            name: characterData.name || "테스트 캐릭터",
-            main_prompt_1: characterData.main_prompt_1,
-            profile_name: characterData.profile_name || "",
-            profile_detail: characterData.profile_detail || "",
-            prompt: characterData.prompt || "",
-            prolog: characterData.prolog || "",
-            start_option: characterData.start_option || "",
-            start_situation: characterData.start_situation || ""
+            state.characterInfo = {
+                name: characterData.name || "테스트 캐릭터",
+                main_prompt_1: characterData.main_prompt_1,
+                profile_name: characterData.profile_name || "",
+                profile_detail: characterData.profile_detail || "",
+                prompt: characterData.prompt || "",
+                prolog: characterData.prolog || "",
+                start_option: characterData.start_option || "",
+                start_situation: characterData.start_situation || "",
+                customSetting: ""  // ⭐ 항상 빈 값으로 시작
         };
         
         elements.characterTitle.textContent = characterData.name;
@@ -113,7 +126,8 @@ document.addEventListener('DOMContentLoaded', function() {
             prompt: "",
             prolog: "",
             start_option: "",
-            start_situation: ""
+            start_situation: "",
+            customSetting: localStorage.getItem('custom_setting') || ""
         };
         state.systemPrompt = "You are a helpful AI assistant.";
         showStatus('기본 캐릭터로 시작합니다.', 'info');
@@ -166,7 +180,11 @@ elements.form.addEventListener('submit', async (e) => {
         const botMessageDiv = botMessageSpan.parentElement;
         const botIndex = state.chatMessages.length - 1;
         botMessageDiv.dataset.messageIndex = botIndex;
-        
+        const rerollBtn = document.createElement('button');
+        rerollBtn.className = 'reroll-message-btn';
+        rerollBtn.innerHTML = '🔄';
+        rerollBtn.title = '메시지 리롤';
+        botMessageDiv.appendChild(rerollBtn);
         const editBtn = document.createElement('button');
         editBtn.className = 'edit-message-btn';
         editBtn.innerHTML = '✏️';
@@ -193,11 +211,23 @@ elements.form.addEventListener('submit', async (e) => {
     }
 });
 
-// Shift+Enter로 줄바꿈, Enter로 전송
+// PC: Shift+Enter로 줄바꿈, Enter로 전송
+// 모바일: Enter로 줄바꿈, 전송 버튼으로만 전송
 elements.input.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        elements.form.dispatchEvent(new Event('submit'));
+    if (e.key === 'Enter') {
+        const isMobile = window.innerWidth <= 768;
+        
+        if (isMobile) {
+            // 모바일: Enter만 누르면 줄바꿈 (기본 동작)
+            // 아무것도 하지 않음 (줄바꿈이 자동으로 됨)
+            return;
+        } else {
+            // PC: Shift 없이 Enter만 누르면 전송
+            if (!e.shiftKey) {
+                e.preventDefault();
+                elements.form.dispatchEvent(new Event('submit'));
+            }
+        }
     }
 });
 
@@ -222,6 +252,29 @@ document.getElementById('summary-result-modal').addEventListener('click', functi
 
 document.getElementById('edit-message-modal').addEventListener('click', function(e) {
     if (e.target === this) window.closeEditMessageModal();
+});
+
+document.getElementById('custom-setting-modal').addEventListener('click', function(e) {
+    if (e.target === this) window.closeCustomSettingModal();
+});
+
+// 커스텀 설정 저장 버튼
+document.getElementById('save-custom-setting-btn').addEventListener('click', function() {
+    const customSettingContent = document.getElementById('custom-setting-content').value.trim();
+    
+    // ⭐ localStorage 제거, characterInfo에만 저장
+    state.characterInfo.customSetting = customSettingContent;
+    
+    // systemPrompt 재생성
+    state.systemPrompt = applyTemplate(state.characterInfo);
+    
+    // 현재 세션 저장 (있으면)
+    if (state.currentChatId) {
+        saveChat();
+    }
+    
+    window.closeCustomSettingModal();
+    showStatus('커스텀 설정이 저장되었습니다.', 'success');
 });
 
 elements.input.focus();

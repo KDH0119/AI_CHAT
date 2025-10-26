@@ -27,19 +27,19 @@ const PRICING = {
 const SAFETY_SETTINGS = [
     {
         category: "HARM_CATEGORY_HARASSMENT",
-        threshold: "BLOCK_NONE"
+        threshold: "OFF"
     },
     {
         category: "HARM_CATEGORY_HATE_SPEECH",
-        threshold: "BLOCK_NONE"
+        threshold: "OFF"
     },
     {
         category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
-        threshold: "BLOCK_NONE"
+        threshold: "OFF"
     },
     {
         category: "HARM_CATEGORY_DANGEROUS_CONTENT",
-        threshold: "BLOCK_NONE"
+        threshold: "OFF"
     }
 ];
 
@@ -254,7 +254,7 @@ export async function* sendToGeminiStream(prompt, history = [], systemInstructio
 
     try {
         const result = await chat.sendMessageStream(prompt, {
-            thinkingConfig: { thinkingBudget: 512 }
+            thinkingConfig: { thinkingBudget: 5000 }
         });
         
         for await (const chunk of result.stream) {
@@ -300,3 +300,7 @@ console.log('\n토큰 추적 시스템 활성화됨!');
 console.log('💡 사용 가능한 명령어:');
 console.log('  - showTokenStats() : 세션 통계 보기');
 console.log('  - resetTokenStats() : 통계 초기화\n');
+
+console.log('🛡️ Safety Settings: OFF (모든 필터 비활성화)\n');
+console.log('⚠️ 안전 설정은 Api.js의 SAFETY_SETTINGS에서 변경할 수 있습니다.');
+console.log('💡 각 사용자는 자신의 API 키로 책임있게 사용해주세요.\n');

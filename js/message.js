@@ -1,6 +1,54 @@
 import { showStatus, clearChatBox, appendMessage, openModal, closeModal } from './ui.js';
 import { saveChat } from './chat.js';
 import { state } from './main.js';
+import { sendToGeminiStream } from './Api.js';
+import { createBotMessageSpan } from './ui.js';
+
+export async function rerollMessage(messageIndex) {
+    const message = state.chatMessages[messageIndex];
+    
+    // 검증
+    if (!message || message.type !== 'bot' || message.isSummary) {
+        showStatus('리롤할 수 없는 메시지입니다.', 'warning');
+        return;
+    }
+    
+    const userMessage = state.chatMessages[messageIndex - 1];
+    if (!userMessage || userMessage.type !== 'user') {
+        showStatus('이전 사용자 메시지를 찾을 수 없습니다.', 'warning');
+        return;
+    }
+    
+    if (!confirm('이 AI 응답을 다시 생성하시겠습니까?')) return;
+    
+    // USER 메시지 내용 저장
+    const userContent = userMessage.content;
+    
+    // AI 메시지 삭제
+    state.chatMessages.splice(messageIndex, 1);
+    state.chatHistory.pop();
+    
+    // USER 메시지도 삭제
+    state.chatMessages.splice(messageIndex - 1, 1);
+    state.chatHistory.pop();
+    
+    // UI에서 AI 메시지 삭제
+    const aiMessageDiv = document.querySelector(`[data-message-index="${messageIndex}"]`);
+    if (aiMessageDiv) aiMessageDiv.remove();
+    
+    // UI에서 USER 메시지 삭제
+    const userMessageDiv = document.querySelector(`[data-message-index="${messageIndex - 1}"]`);
+    if (userMessageDiv) userMessageDiv.remove();
+    
+    // 기존 입력창에 넣고 전송
+    const inputElement = document.getElementById('prompt-input');
+    inputElement.value = userContent;
+    document.getElementById('prompt-form').dispatchEvent(new Event('submit'));
+}
+
+window.rerollMessage = rerollMessage;
+
+window.rerollMessage = rerollMessage;
 
 export function editMessage(messageIndex) {
     const message = state.chatMessages[messageIndex];
@@ -80,3 +128,4 @@ export function deleteMessage(messageIndex) {
 
 window.editMessage = editMessage;
 window.deleteMessage = deleteMessage;
+window.rerollMessage = rerollMessage;
