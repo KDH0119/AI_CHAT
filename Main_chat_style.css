@@ -420,6 +420,24 @@ body {
     z-index: 10;
 }
 
+.message.user .reroll-message-btn,
+.message.user .edit-message-btn,
+.message.user .delete-message-btn {
+    right: auto;
+}
+
+.message.user .reroll-message-btn {
+    left: 64px;
+}
+
+.message.user .edit-message-btn {
+    left: 36px;
+}
+
+.message.user .delete-message-btn {
+    left: 8px;
+}
+
 .reroll-message-btn {
     right: 64px;
 }

@@ -3,10 +3,21 @@ export const STORAGE_KEY = 'gemini_chat_sessions';
 export const MODEL_NAME = "gemini-2.5-pro";
 
 
-export const SUMMARY_SYSTEM_PROMPT = `
+export const DEFAULT_SUMMARY_LEVEL = 5;
+
+function clampSummaryLevel(value) {
+    const num = Number(value);
+    if (!Number.isFinite(num)) return DEFAULT_SUMMARY_LEVEL;
+    return Math.min(10, Math.max(0, num));
+}
+
+export function getSummarySystemPrompt(summaryLevel = DEFAULT_SUMMARY_LEVEL) {
+    const level = clampSummaryLevel(summaryLevel);
+
+    return `
 
 [CONFIGURATION]
-SUMMARY_LEVEL(0=Max Detail, 5=Balanced, 10=Max Compression) = 5
+SUMMARY_LEVEL(0=Max Detail, 5=Balanced, 10=Max Compression) = ${level}
 ALLOW_OMISSION(ON=Allow omitting/integrating old/less relevant info, OFF=Keep most history) = OFF
 
 System Prompt: Roleplaying Archive Generator
@@ -83,4 +94,5 @@ Data Fidelity & Scope:  - Include: Key plot events, major relationship changes (
 === 요약 내용 끝. 이 정보를 바탕으로 롤플레잉을 진행하세요. ===
 
 [FINAL INSTRUCTION]
-Analyze the provided dialogue and create a summary following all protocols. Apply SUMMARY_LEVEL=5 and ALLOW_OMISSION=OFF. Output must be in KOREAN following the exact structure above.`;
+Analyze the provided dialogue and create a summary following all protocols. Apply SUMMARY_LEVEL=${level} and ALLOW_OMISSION=OFF. Output must be in KOREAN following the exact structure above.`;
+}

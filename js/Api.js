@@ -43,6 +43,10 @@ const SAFETY_SETTINGS = [
     }
 ];
 
+const RETRY_DELAY_MS = 1000;
+
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
 window.updateApiKey = function(newApiKey) {
     API_KEY = newApiKey;
     genAI = newApiKey ? new GoogleGenerativeAI(newApiKey) : null;
@@ -204,95 +208,105 @@ window.resetTokenStats = function() {
 
 export async function sendToGemini(prompt, systemInstruction = "") {
     if (!genAI) {
-        throw new Error("⚠️ API Key를 먼저 입력해주세요!");
+        throw new Error("⚠️ API Key를 먼저 입력해 주세요!");
     }
-    const model = genAI.getGenerativeModel({
-        model: MODEL_NAME,
-        systemInstruction: systemInstruction,
-        safetySettings: SAFETY_SETTINGS
-    });
     
-    try {
-        const result = await model.generateContent(prompt);
-        const response = await result.response;
+    while (true) {
+        const model = genAI.getGenerativeModel({
+            model: MODEL_NAME,
+            systemInstruction: systemInstruction,
+            safetySettings: SAFETY_SETTINGS
+        });
         
-        if (response.usageMetadata) {
-            logTokenUsage(response.usageMetadata, "요약");
+        try {
+            const result = await model.generateContent(prompt);
+            const response = await result.response;
+            
+            if (response.usageMetadata) {
+                logTokenUsage(response.usageMetadata, "요약");
+            }
+            
+            return response.text();
+        } catch (error) {
+            
+            if (error.status === 503 || error.message?.includes('503')) {
+                console.warn("503 응답 수신: 잠시 후 다시 시도합니다.");
+                await delay(RETRY_DELAY_MS);
+                continue;
+            }
+            throw error;
         }
-        
-        return response.text();
-    } catch (error) {
-        
-        if (error.status === 503 || error.message?.includes('503')) {
-            throw new Error("서버 응답: 503\n구글 서버 문제로 요청이 거부됐습니다. (비용 차감 X)");
-        }
-        throw error;
     }
 }
 
 export async function* sendToGeminiStream(prompt, history = [], systemInstruction = "") {
     if (!genAI) {
-        throw new Error("⚠️ API Key를 먼저 입력해주세요!");
+        throw new Error("⚠️ API Key를 먼저 입력해 주세요!");
     }
     
-    console.log('🔄 API 요청 시작...');
-    
-    const model = genAI.getGenerativeModel({
-        model: MODEL_NAME,
-        systemInstruction: systemInstruction,
-        safetySettings: SAFETY_SETTINGS
-    });
-    
-    const chat = model.startChat({
-        history: history,
-        generationConfig: {
-            temperature: 0.8,   
-            topK: 40,
-            topP: 0.95,
-        }
-    });
-
-    try {
-        const result = await chat.sendMessageStream(prompt, {
-            thinkingConfig: { thinkingBudget: 5000 }
+    while (true) {
+        console.log("🌐 API 요청 시작...");
+        
+        const model = genAI.getGenerativeModel({
+            model: MODEL_NAME,
+            systemInstruction: systemInstruction,
+            safetySettings: SAFETY_SETTINGS
         });
         
-        for await (const chunk of result.stream) {
-            yield chunk.text();
-        }
-        
-        try {
-            const finalResponse = await result.response;
-            console.log('📦 전체 응답 객체:', finalResponse);
-            
-            const usageMetadata = finalResponse.usageMetadata || 
-                                 finalResponse.usage_metadata ||
-                                 finalResponse.usage ||
-                                 null;
-            
-            if (usageMetadata) {
-                logTokenUsage(usageMetadata, "채팅");
-            } else {
-                console.warn('⚠️ usageMetadata를 찾을 수 없습니다.');
-                console.log('📋 사용 가능한 속성들:', Object.keys(finalResponse));
+        const chat = model.startChat({
+            history: history,
+            generationConfig: {
+                temperature: 0.8, 
+                topK: 40,
+                topP: 0.95,
             }
+        });
+
+        try {
+            const result = await chat.sendMessageStream(prompt, {
+                thinkingConfig: { thinkingBudget: 5000 }
+            });
+            
+            for await (const chunk of result.stream) {
+                yield chunk.text();
+            }
+            
+            try {
+                const finalResponse = await result.response;
+                console.log("📦 전체 응답 객체:", finalResponse);
+                
+                const usageMetadata = finalResponse.usageMetadata || 
+                                     finalResponse.usage_metadata ||
+                                     finalResponse.usage ||
+                                     null;
+                
+                if (usageMetadata) {
+                    logTokenUsage(usageMetadata, "채팅");
+                } else {
+                    console.warn("⚠️ usageMetadata를 찾을 수 없습니다.");
+                    console.log("ℹ️ 사용 가능한 속성:", Object.keys(finalResponse));
+                }
+            } catch (error) {
+                console.error("❌ 토큰 사용량 조회 오류:", error);
+            }
+            
+            return;
         } catch (error) {
-            console.error('❌ 토큰 사용량 조회 오류:', error);
+            if (error.status === 503 || error.message?.includes('503')) {
+                console.warn("503 응답 수신: 잠시 후 다시 시도합니다.");
+                await delay(RETRY_DELAY_MS);
+                continue;
+            }
+            // 429 오류 (Rate Limit) 처리
+            if (error.status === 429 || error.message?.includes('429')) {
+                throw new Error("서버 응답: 429\n요청 한도 초과. 잠시 후 다시 시도해 주세요.");
+            }
+            // 400 오류 (잘못된 요청) 처리
+            if (error.status === 400 || error.message?.includes('400')) {
+                throw new Error("서버 응답: 400\n요청 형식 오류. API Key와 프롬프트를 확인해 주세요.");
+            }
+            throw error;
         }
-    } catch (error) {
-        // 503 에러 처리
-        if (error.status === 503 || error.message?.includes('503')) {
-            throw new Error("서버 응답: 503\n구글 서버 문제로 요청이 거부됐습니다. (비용 차감 X)");
-        }
-        // 429 에러 (Rate Limit) 처리
-        if (error.status === 429 || error.message?.includes('429')) {
-            throw new Error("서버 응답: 429\n요청 한도 초과. 잠시 후 다시 시도해주세요.");
-        }
-        // 400 에러 (잘못된 요청) 처리
-        if (error.status === 400 || error.message?.includes('400')) {
-            throw new Error("서버 응답: 400\n요청 형식 오류. API Key나 프롬프트를 확인해주세요.");
-        }
-        throw error;
     }
 }
 
